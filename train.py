@@ -89,6 +89,7 @@ for epoch in range(EPOCHS):
 torch.save(model.state_dict(),"diffusion_model.pth")
 
 plt.plot(loss_history)
+plt.yscale("log")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.title("Training Loss")
