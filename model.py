@@ -55,8 +55,7 @@ class MLPDiffusion(nn.Module):
 
         x = self.head(x)
 
-        x = x + time_emb
-
+        x = x + time_emb[:,None,:]
         x = self.blocks(x)
 
         x = self.tail(x)
