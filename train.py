@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 # Hyperparameters
 DATASET_SIZE = 10000
 BATCH_SIZE = 128
-LR = 1e-4
-EPOCHS = 50
+LR = 1e-3
+EPOCHS = 300
 TIME_STEPS = 100
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -49,7 +49,7 @@ model = MLPDiffusion().to(device)
 optimizer = optim.Adam(model.parameters(),lr = LR)
 criterion = nn.MSELoss()
 
-
+scheduler  = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
 loss_history = []
 
 for epoch in range(EPOCHS):
@@ -77,6 +77,7 @@ for epoch in range(EPOCHS):
 
         epoch_loss += loss.item()
     
+    scheduler.step()
     avg_loss = epoch_loss / len(data_loader)
     loss_history.append(avg_loss)
 
