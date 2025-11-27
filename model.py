@@ -11,11 +11,11 @@ class SinusoidalPositionEmbedding(nn.Module):
     def forward(self, time):
         device  = time.device
         half_dim = self.dim // 2
-        emb = math.log(10000) / (half_dim - 1)
-        emb = torch.exp(torch.arange(half_dim, dtype=torch.float32) * -emb)
-        emb = time[:, None] * emb[None, :]
-        emb = torch.cat((emb.sin(), emb.cos()), dim=-1)
-        return emb
+        embeddings = math.log(10000) / (half_dim - 1)
+        embeddings = torch.exp(torch.arange(half_dim, dtype=torch.float32, device=device) * -embeddings)
+        embeddings = time[:, None] * embeddings[None, :]
+        embeddings = torch.cat((embeddings.sin(), embeddings.cos()), dim=-1)
+        return embeddings
 
 class Block(nn.Module):
     def __init__(self,size):
@@ -50,7 +50,7 @@ class MLPDiffusion(nn.Module):
         self.tail = nn.Linear(hidden_size,2)
 
     def forward(self,x,t):
-
+        
         time_emb = self.time_mlp(t)
 
         x = self.head(x)
