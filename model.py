@@ -30,16 +30,19 @@ class Block(nn.Module):
 
 
 class MLPDiffusion(nn.Module):
-    def __init__(self,hidden_size = 128):
+    def __init__(self,hidden_size = 128,num_classes = 2):
         super().__init__()
 
 
         self.head = nn.Linear(2,hidden_size)
+        
         self.time_mlp = nn.Sequential(
             SinusoidalPositionEmbedding(hidden_size),
             nn.Linear(hidden_size,hidden_size),
             nn.GELU()
         )
+        
+        self.class_emb = nn.Embedding(num_classes,hidden_size)
 
         self.blocks = nn.Sequential(
             Block(hidden_size),
@@ -49,13 +52,16 @@ class MLPDiffusion(nn.Module):
 
         self.tail = nn.Linear(hidden_size,2)
 
-    def forward(self,x,t):
+    def forward(self,x,t,labels):
         
         time_emb = self.time_mlp(t)
 
+        c_emb = self.class_emb(labels)
+
         x = self.head(x)
 
-        x = x + time_emb[:,None,:]
+        x = x + time_emb[:,None,:] + c_emb[:,None,:]
+
         x = self.blocks(x)
 
         x = self.tail(x)
@@ -71,8 +77,9 @@ if __name__ == "__main__":
 
     dummy_t = torch.randint(0, 100, (10,))
     
+    dummy_labels = torch.randint(0, 2, (10,))
 
-    output = model(dummy_x, dummy_t)
+    output = model(dummy_x, dummy_t, dummy_labels)
     
 
     print(f"Input Shape: {dummy_x.shape}") 
@@ -80,3 +87,5 @@ if __name__ == "__main__":
     
     num_params = sum(p.numel() for p in model.parameters())
     print(f"Total Parameters: {num_params}")
+
+    print("model is updated")
