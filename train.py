@@ -44,7 +44,7 @@ def q_sample(x_0,t,noise=None):
 dataset = PointCloudDataset(DATASET_SIZE)
 data_loader = DataLoader(dataset,batch_size=BATCH_SIZE,shuffle=True)
 
-model = MLPDiffusion().to(device)
+model = MLPDiffusion(num_classes = 2).to(device)
 
 optimizer = optim.Adam(model.parameters(),lr = LR)
 criterion = nn.MSELoss()
@@ -54,10 +54,12 @@ loss_history = []
 
 for epoch in range(EPOCHS):
     epoch_loss = 0
-    for batch_data, _ in data_loader:
+    for batch_data, batch_labels in data_loader:
 
         x_0 = batch_data.to(device)
 
+        labels = batch_labels.to(device)
+        
         t = torch.randint(0,TIME_STEPS,(x_0.shape[0],),device=device)   
 
         noise = torch.randn_like(x_0)
@@ -65,7 +67,7 @@ for epoch in range(EPOCHS):
         x_t, noise_added = q_sample(x_0,t,noise)        
         
 
-        noise_pred = model(x_t,t).to(device)
+        noise_pred = model(x_t,t,labels).to(device)
 
         loss = criterion(noise_pred,noise_added)
 
@@ -86,7 +88,7 @@ for epoch in range(EPOCHS):
         print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {avg_loss}")
         
 
-torch.save(model.state_dict(),"diffusion_model.pth")
+torch.save(model.state_dict(),"diffusion_model_conditioned.pth")
 
 plt.plot(loss_history)
 plt.yscale("log")
