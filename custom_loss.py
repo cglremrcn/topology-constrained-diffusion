@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-from torch_topolocigal.nn import VietorisRipsComplex
+from torch_topological.nn import VietorisRipsComplex
 
-class TopolocigalLoss(nn.Module):
+class TopologicalLoss(nn.Module):
     def __init__(self,dim = 1):
         super().__init__()
 
@@ -16,9 +16,9 @@ class TopolocigalLoss(nn.Module):
 
         count = 0
 
-        for i,diagram in enumarete(diagrams):
+        for i,diagram in enumerate(diagrams):
 
-            if diagram is NOne or len(diagram) == 0:
+            if diagram is None or len(diagram) == 0:
                 continue
 
             
