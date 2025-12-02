@@ -110,5 +110,28 @@ def update(frame):
                 lines.append(line)
 
 print("start the animation...")
-ani = animation.FuncAnimation(fig, update, frames=np.arange(0, 60), interval=100, repeat=False)
-plt.show()
+# Slow down animation: interval=200ms (5 fps)
+ani = animation.FuncAnimation(fig, update, frames=np.arange(0, 60), interval=200, repeat=False)
+
+# Set ffmpeg path explicitly since it's not in system PATH
+plt.rcParams['animation.ffmpeg_path'] = r'C:\Program Files\BlueStacks_nxt\ffmpeg.exe'
+
+# Save as MP4 video
+print("Saving animation as MP4 video...")
+try:
+    # fps=5 matches the interval of 200ms
+    ani.save('topology_filtration.mp4', writer='ffmpeg', fps=5, dpi=100)
+    print("Video saved as 'topology_filtration.mp4'")
+except Exception as e:
+    print(f"Could not save MP4: {e}")
+    # Fallback to GIF if MP4 fails
+    print("Saving animation as GIF...")
+    try:
+        ani.save('topology_filtration.gif', writer='pillow', fps=5)
+        print("GIF saved as 'topology_filtration.gif'")
+    except Exception as ex:
+        print(f"Could not save GIF: {ex}")
+
+# plt.show() # Commented out to run in background
+
+print("Done.")
