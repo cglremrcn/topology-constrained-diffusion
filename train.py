@@ -13,7 +13,7 @@ from custom_loss import TopologicalLoss
 
 # Hyperparameters
 DATASET_SIZE = 10000
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 LR = 1e-3
 EPOCHS = 300
 TIME_STEPS = 100
@@ -47,7 +47,7 @@ def q_sample(x_0,t,noise=None):
 
 
 
-dataset = PointCloudDataset(DATASET_SIZE)
+dataset = PointCloudDataset(DATASET_SIZE,n_points=50)
 data_loader = DataLoader(dataset,batch_size=BATCH_SIZE,shuffle=True)
 
 model = MLPDiffusion(num_classes = 2).to(device)
