@@ -25,7 +25,7 @@ class Block(nn.Module):
 
 
     def forward(self,x):
-        return self.act(self.ff(x)) 
+        return x +self.act(self.ff(x)) 
 
 
 
@@ -34,7 +34,7 @@ class MLPDiffusion(nn.Module):
         super().__init__()
 
 
-        self.head = nn.Linear(2,hidden_size)
+        self.head = nn.Linear(2 + hidden_size + hidden_size,hidden_size)
         
         self.time_mlp = nn.Sequential(
             SinusoidalPositionEmbedding(hidden_size),
@@ -45,6 +45,7 @@ class MLPDiffusion(nn.Module):
         self.class_emb = nn.Embedding(num_classes,hidden_size)
 
         self.blocks = nn.Sequential(
+            Block(hidden_size),
             Block(hidden_size),
             Block(hidden_size),
             Block(hidden_size)
@@ -58,20 +59,26 @@ class MLPDiffusion(nn.Module):
 
         c_emb = self.class_emb(labels)
 
-        x = self.head(x)
+        N = x.shape[1]
 
-        x = x + time_emb[:,None,:] + c_emb[:,None,:]
+        time_emb_expanded = time_emb[:,None,:].expand(-1,N,-1)
 
-        x = self.blocks(x)
+        c_emb_expanded = c_emb[:,None,:].expand(-1,N,-1)
 
-        x = self.tail(x)
+        full_input = torch.cat([x,time_emb_expanded,c_emb_expanded],dim=-1)
+        
+        h = self.head(full_input)
+
+        h = self.blocks(h)
+
+        x = self.tail(h)
         return x
 
 
 
 if __name__ == "__main__":
 
-    model = MLPDiffusion(hidden_size=128)
+    model = MLPDiffusion(hidden_size=256)
 
     dummy_x = torch.randn(10, 2)
 
