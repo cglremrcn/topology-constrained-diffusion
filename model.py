@@ -30,7 +30,7 @@ class Block(nn.Module):
 
 
 class MLPDiffusion(nn.Module):
-    def __init__(self,hidden_size = 128,num_classes = 2):
+    def __init__(self,hidden_size = 256,num_classes = 2):
         super().__init__()
 
 
