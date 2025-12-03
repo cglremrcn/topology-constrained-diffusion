@@ -13,9 +13,9 @@ from custom_loss import TopologicalLoss
 
 # Hyperparameters
 DATASET_SIZE = 10000
-BATCH_SIZE = 32
+BATCH_SIZE = 128
 LR = 1e-3
-EPOCHS = 300
+EPOCHS = 100
 TIME_STEPS = 100
 LAMBDA_TOPO = 0.01
 
