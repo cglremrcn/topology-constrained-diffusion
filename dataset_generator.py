@@ -27,6 +27,23 @@ def get_topology(point_cloud):
     return betti
 
 
+def generate_nested_rings(n_points=200, noise=0.05):
+    n_inner = n_points // 2
+    n_outer = n_points - n_inner
+    
+    angles_in = np.random.uniform(0, 2 * np.pi, n_inner)
+    x_in = (0.5 * np.cos(angles_in)) + np.random.normal(0, noise, n_inner)
+    y_in = (0.5 * np.sin(angles_in)) + np.random.normal(0, noise, n_inner)
+    
+    angles_out = np.random.uniform(0, 2 * np.pi, n_outer)
+    x_out = (1.0 * np.cos(angles_out)) + np.random.normal(0, noise, n_outer)
+    y_out = (1.0 * np.sin(angles_out)) + np.random.normal(0, noise, n_outer)
+    
+    x = np.concatenate([x_in, x_out])
+    y = np.concatenate([y_in, y_out])
+    
+    return np.stack([x, y], axis=1)
+
 
 
 if __name__ == "__main__":
